@@ -70,8 +70,9 @@ def create_coco_semantic_from_instance(instance_json, sem_seg_root, categories):
             anns_ids = coco_detection.getAnnIds(img_id)
             anns = coco_detection.loadAnns(anns_ids)
             img = coco_detection.loadImgs(int(img_id))[0]
-            file_name = os.path.splitext(img["file_name"])[0]
-            output = os.path.join(sem_seg_root, file_name + '.npz')
+            file_name = os.path.splitext(img["file_name"])[0] 
+            # output = os.path.join(sem_seg_root, file_name + '.npz')
+            output = file_name + '.npz'
             yield anns, output, img
 
     # single process
@@ -85,7 +86,7 @@ def create_coco_semantic_from_instance(instance_json, sem_seg_root, categories):
 
     pool = mp.Pool(processes=max(mp.cpu_count() // 2, 4))
 
-    print("Start writing to {} ...".format(sem_seg_root))
+#    print("Start writing to {} ...".format(sem_seg_root))
     start = time.time()
     pool.starmap(
         functools.partial(
@@ -101,7 +102,7 @@ def get_parser():
     parser = argparse.ArgumentParser(description="Keep only model in ckpt")
     parser.add_argument(
         "--dataset-name",
-        default="coco",
+        default="cam-cv-1.0_Train",
         help="dataset to generate",
     )
     return parser
@@ -116,11 +117,12 @@ if __name__ == "__main__":
         annotation_name = "annotations/instances_{}.json"
     else:
         thing_id_to_contiguous_id = {1: 0}
+        # thing_id_to_contiguous_id = {0: 0}
         split_name = 'train'
         annotation_name = "annotations/{}_person.json"
     for s in ["train2017"]:
         create_coco_semantic_from_instance(
-            os.path.join(dataset_dir, "annotations/instances_{}.json".format(s)),
+            "../Images/annotations/camo_test.json",
             os.path.join(dataset_dir, "thing_{}".format(s)),
             thing_id_to_contiguous_id
         )

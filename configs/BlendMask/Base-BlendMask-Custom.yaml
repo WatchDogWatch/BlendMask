@@ -1,0 +1,29 @@
+MODEL:
+  META_ARCHITECTURE: "BlendMask"
+  MASK_ON: True
+  BACKBONE:
+    NAME: "build_fcos_resnet_fpn_backbone"
+  RESNETS:
+    OUT_FEATURES: ["res3", "res4", "res5"]
+  FPN:
+    IN_FEATURES: ["res3", "res4", "res5"]
+  PROPOSAL_GENERATOR:
+    NAME: "FCOS"
+  BASIS_MODULE:
+    LOSS_ON: True
+  PANOPTIC_FPN:
+    COMBINE:
+      ENABLED: False
+  FCOS:
+    THRESH_WITH_CTR: True
+    USE_SCALE: False
+DATASETS:
+  TRAIN: ("cam-cv-1.0_Train",)
+  TEST: ("cam-cv-1.0_Test",)
+SOLVER:
+  IMS_PER_BATCH: 4
+  BASE_LR: 0.0001  # Note that RetinaNet uses a different default learning rate
+  STEPS: (240000, 350000)
+  MAX_ITER: 360000
+INPUT:
+  MIN_SIZE_TRAIN: (640, 672, 704, 736, 768, 800)

@@ -22,12 +22,13 @@ import torch
 from torch.nn.parallel import DistributedDataParallel
 
 import detectron2.utils.comm as comm
-from detectron2.data import MetadataCatalog, build_detection_train_loader
+from detectron2.data import MetadataCatalog, build_detection_train_loader, DatasetCatalog
+from detectron2.data.datasets import register_coco_instances
 from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, hooks, launch
 from detectron2.utils.events import EventStorage
 from detectron2.evaluation import (
     COCOEvaluator,
-    COCOPanopticEvaluator,
+    COCOPanopticEvaluator, 
     DatasetEvaluators,
     LVISEvaluator,
     PascalVOCDetectionEvaluator,
@@ -41,6 +42,7 @@ from adet.data.dataset_mapper import DatasetMapperWithBasis
 from adet.config import get_cfg
 from adet.checkpoint import AdetCheckpointer
 from adet.evaluation import TextEvaluator
+
 
 
 class Trainer(DefaultTrainer):
@@ -124,7 +126,11 @@ class Trainer(DefaultTrainer):
         It calls :func:`detectron2.data.build_detection_train_loader` with a customized
         DatasetMapper, which adds categorical labels as a semantic mask.
         """
+        register_coco_instances("cam-cv-1.0_Train", {}, '../camo_annotations/merge_camo_train.json', '')
+        register_coco_instances("cam-cv-1.0_Test", {}, '../camo_annotations/merge_camo_test.json', '')
         mapper = DatasetMapperWithBasis(cfg, True)
+        # DatasetCatalog.register('cam-cv-1.0_Train', mapper)
+        # DatasetCatalog.register('cam-cv-1.0_Test', mapper)
         return build_detection_train_loader(cfg, mapper)
 
     @classmethod
@@ -222,12 +228,12 @@ def main(args):
     consider writing your own training loop or subclassing the trainer.
     """
     trainer = Trainer(cfg)
-    # trainer.resume_or_load(resume=args.resume)
-    # if cfg.TEST.AUG.ENABLED:
-    #     trainer.register_hooks(
-    #         [hooks.EvalHook(0, lambda: trainer.test_with_TTA(cfg, trainer.model))]
-    #     )
-    # return trainer.train()
+    trainer.resume_or_load(resume=args.resume)
+    if cfg.TEST.AUG.ENABLED:
+        trainer.register_hooks(
+            [hooks.EvalHook(0, lambda: trainer.test_with_TTA(cfg, trainer.model))]
+        )
+    return trainer.train()
 
 
 if __name__ == "__main__":
