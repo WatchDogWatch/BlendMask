@@ -22,7 +22,7 @@ DATASETS:
   TEST: ("cam-cv-1.0_Test",)
 SOLVER:
   IMS_PER_BATCH: 4
-  BASE_LR: 0.0001  # Note that RetinaNet uses a different default learning rate
+  BASE_LR: 0.0025  # Note that RetinaNet uses a different default learning rate
   STEPS: (240000, 350000)
   MAX_ITER: 360000
 INPUT:

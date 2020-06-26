@@ -126,8 +126,8 @@ class Trainer(DefaultTrainer):
         It calls :func:`detectron2.data.build_detection_train_loader` with a customized
         DatasetMapper, which adds categorical labels as a semantic mask.
         """
-        register_coco_instances("cam-cv-1.0_Train", {}, '../camo_annotations/merge_camo_train.json', '')
-        register_coco_instances("cam-cv-1.0_Test", {}, '../camo_annotations/merge_camo_test.json', '')
+        register_coco_instances("cam-cv-1.0_Train", {}, '../Images/annotations/noncamo_train.json', '')
+        register_coco_instances("cam-cv-1.0_Test", {}, '../Images/annotations/noncamo_test.json', '')
         mapper = DatasetMapperWithBasis(cfg, True)
         # DatasetCatalog.register('cam-cv-1.0_Train', mapper)
         # DatasetCatalog.register('cam-cv-1.0_Test', mapper)
